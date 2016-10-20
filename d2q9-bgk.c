@@ -393,7 +393,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles, double 
     }
   }
 
-  return tot_u / (double)tot_cells;
+  return tot_u / tot_cells;
 }
 
 int initialise(const char* paramfile, const char* obstaclefile,
