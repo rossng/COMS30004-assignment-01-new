@@ -210,6 +210,7 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   /* modify the 2nd row of the grid */
   int ii = params.ny - 2;
 
+#pragma omp parallel for
   for (int jj = 0; jj < params.nx; jj++)
   {
     /* if the cell is not occupied and
