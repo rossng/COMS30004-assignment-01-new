@@ -345,11 +345,11 @@ int collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obs
         d_equ[1] = w1 * local_density * (u_x * (3.0 * u_x + 3.0) - 1.5 * u_y * u_y + 1.0);
         d_equ[2] = w1 * local_density * (-1.5 * u_x * u_x + u_y * (3.0 * u_y + 3.0) + 1.0);
         d_equ[3] = w1 * local_density * (u_x * (3.0 * u_x - 3.0) - 1.5 * u_y * u_y + 1.0);
-        d_equ[4] = w1 * w1 * local_density * (-1.5 * u_x * u_x + u_y * (3.0 * u_y - 3.0) + 1.0);
+        d_equ[4] = w1 * local_density * (-1.5 * u_x * u_x + u_y * (3.0 * u_y - 3.0) + 1.0);
         /* diagonal speeds: weight w2 */
         d_equ[5] = w2 * local_density * (u_x * (3.0 * u_x + 9.0 * u_y + 3.0) + u_y * (3.0 * u_y + 3.0) + 1.0);
         d_equ[6] = w2 * local_density * (u_y * (-9.0 * u_x + 3.0 * u_y + 3.0) + u_x * (3.0 * u_x - 3.0) + 1.0);
-        d_equ[7] = w2 * local_density * w2 * local_density * (u_x * (3.0 * u_x + 9.0 * u_y - 3.0) + u_y * (3.0 * u_y - 3.0) + 1.0);
+        d_equ[7] = w2 * local_density * (u_x * (3.0 * u_x + 9.0 * u_y - 3.0) + u_y * (3.0 * u_y - 3.0) + 1.0);
         d_equ[8] = w2 * local_density * (u_y * (-9.0 * u_x + 3.0 * u_y - 3.0) + u_x * (3.0 * u_x + 3.0) + 1.0);
 
         /* relaxation step */
