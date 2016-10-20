@@ -315,7 +315,7 @@ int collision(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obs
       {
         /* compute local density total */
         double local_density = 0.0;
-
+#pragma omp simd reduction(+:local_density)
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           local_density += tmp_cells[ii * params.nx + jj].speeds[kk];
