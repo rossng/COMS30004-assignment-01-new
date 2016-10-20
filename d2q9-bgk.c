@@ -397,6 +397,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
   /* initialise */
   tot_u = 0.0;
 
+#pragma omp parallel for
   /* loop over all non-blocked cells */
   for (int ii = 0; ii < params.ny; ii++)
   {
@@ -430,8 +431,10 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
                          + cells[ii * params.nx + jj].speeds[8]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
+#pragma omp critical
         tot_u += sqrt((u_x * u_x) + (u_y * u_y));
         /* increase counter of inspected cells */
+#pragma omp critical
         ++tot_cells;
       }
     }
