@@ -107,10 +107,10 @@ int finalise(const t_param* params, t_speed** cells_ptr, t_speed** tmp_cells_ptr
 double total_density(const t_param params, t_speed* cells);
 
 /* compute average velocity */
-double av_velocity(const t_param params, t_speed* cells, int* obstacles, double tot_cells);
+double av_velocity(const t_param params, t_speed* cells, int* obstacles, int tot_cells);
 
 /* calculate Reynolds number */
-double calc_reynolds(const t_param params, t_speed* cells, int* obstacles, double tot_cells);
+double calc_reynolds(const t_param params, t_speed* cells, int* obstacles, int tot_cells);
 
 /* utility functions */
 void die(const char* message, const int line, const char* file);
@@ -153,13 +153,12 @@ int main(int argc, char* argv[])
   gettimeofday(&timstr, NULL);
   tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
 
-  int tot_cells_i = 0;
+  int tot_cells = 0;
   for (int ii = 0; ii < params.nx * params.ny; ii++) {
     if (!obstacles[ii]) {
-      tot_cells_i++;
+      tot_cells++;
     }
   }
-  double tot_cells = tot_cells_i;
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
@@ -348,7 +347,7 @@ int rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cel
   return EXIT_SUCCESS;
 }
 
-double av_velocity(const t_param params, t_speed* cells, int* obstacles, double tot_cells)
+double av_velocity(const t_param params, t_speed* cells, int* obstacles, int tot_cells)
 {
   double tot_u;          /* accumulated magnitudes of velocity for each cell */
 
@@ -573,7 +572,7 @@ int finalise(const t_param* params, t_speed** cells_ptr, t_speed** tmp_cells_ptr
 }
 
 
-double calc_reynolds(const t_param params, t_speed* cells, int* obstacles, double tot_cells)
+double calc_reynolds(const t_param params, t_speed* cells, int* obstacles, int tot_cells)
 {
   const double viscosity = 1.0 / 6.0 * (2.0 / params.omega - 1.0);
 
