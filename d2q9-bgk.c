@@ -124,19 +124,6 @@ inline float fast_sqrt(float fIn) {
   return fOut;
 }
 
-#define SQRT_MAGIC_F 0x5f3759df
-inline float fast_sqrt2(const float x) {
-  union {
-      float x;
-      int i;
-  } u;
-  u.x = x;
-  u.i = SQRT_MAGIC_F - (u.i >> 1);
-  const float xux = x*u.x;
-
-  return xux*(1.5f - 0.5f*xux*u.x);
-}
-
 int tot_cells = 0;
 
 /*
@@ -402,7 +389,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
                          + cells[ii * params.nx + jj].speeds[8]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
-        tot_u += fast_sqrt2((float) ((u_x * u_x) + (u_y * u_y)));
+        tot_u += fast_sqrt((float) ((u_x * u_x) + (u_y * u_y)));
       }
     }
   }
