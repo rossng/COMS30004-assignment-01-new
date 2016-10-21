@@ -55,6 +55,7 @@
 #include<time.h>
 #include<sys/time.h>
 #include<sys/resource.h>
+#include <xmmintrin.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
@@ -115,6 +116,8 @@ double calc_reynolds(const t_param params, t_speed* cells, int* obstacles);
 /* utility functions */
 void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
+
+inline float SSESqrt( float fIn ) { float fOut; _mm_store_ss( &fOut, _mm_sqrt_ss( _mm_load_ss( &fIn ) ) ); return fOut; }
 
 int tot_cells = 0;
 
@@ -381,7 +384,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
                          + cells[ii * params.nx + jj].speeds[8]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
-        tot_u += sqrt((u_x * u_x) + (u_y * u_y));
+        tot_u += SSESqrt((float)((u_x * u_x) + (u_y * u_y)));
       }
     }
   }
