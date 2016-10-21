@@ -3,7 +3,7 @@
 EXE=d2q9-bgk
 
 CC=icc
-CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div
+CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div -xsse4.2
 LIBS = -lm
 EXTRAFLAGS= -debug full
 
