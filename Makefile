@@ -3,7 +3,7 @@
 EXE=d2q9-bgk
 
 CC=icc
-CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div -xCORE-AVX-I
+CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div -xAVX
 LIBS = -lm
 EXTRAFLAGS= -debug full
 
