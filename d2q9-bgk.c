@@ -55,7 +55,6 @@
 #include<time.h>
 #include<sys/time.h>
 #include<sys/resource.h>
-#include <xmmintrin.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
@@ -116,8 +115,6 @@ double calc_reynolds(const t_param params, t_speed* cells, int* obstacles);
 /* utility functions */
 void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
-
-inline void fast_sqrt_acc(float* restrict acc, float* restrict in);
 
 int tot_cells = 0;
 
@@ -346,11 +343,10 @@ void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_ce
 
 double av_velocity(const t_param params, t_speed* cells, int* obstacles)
 {
-  float tot_u;          /* accumulated magnitudes of velocity for each cell */
-  float temp;
+  double tot_u;          /* accumulated magnitudes of velocity for each cell */
 
   /* initialise */
-  tot_u = 0.0f;
+  tot_u = 0.0;
 #pragma omp parallel for reduction(+:tot_u)
   /* loop over all non-blocked cells */
   for (int ii = 0; ii < params.ny; ii++)
@@ -385,8 +381,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
                          + cells[ii * params.nx + jj].speeds[8]))
                      / local_density;
         /* accumulate the norm of x- and y- velocity components */
-        temp = (float)((u_x * u_x) + (u_y * u_y));
-        fast_sqrt_acc(&tot_u, &temp);
+        tot_u += sqrt((u_x * u_x) + (u_y * u_y));
       }
     }
   }
@@ -693,9 +688,3 @@ void usage(const char* exe)
   exit(EXIT_FAILURE);
 }
 
-inline void fast_sqrt_acc(float* restrict acc, float* restrict in)
-{
-  __m128 in_ = _mm_load_ss(in);
-  __m128 acc_ = _mm_load_ss(acc);
-  _mm_store_ss(acc, _mm_add_ss(acc_, _mm_mul_ss(in_, _mm_rsqrt_ss(in_))));
-}
