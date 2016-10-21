@@ -118,6 +118,7 @@ void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
 inline float SSESqrt( float fIn ) {
+  if (fIn == 0) { return 0.0f; }
   float fOut;
   _mm_store_ss(&fOut, _mm_mul_ss(_mm_load_ss(&fIn), _mm_rsqrt_ss(_mm_load_ss( &fIn ))));
   return fOut;
