@@ -653,7 +653,7 @@ int write_values(const t_param params, t_speed* cells, int* obstacles, double* a
                   + cells[ii * params.nx + jj].speeds[8]))
               / local_density;
         /* compute norm of velocity */
-        u = sqrt((u_x * u_x) + (u_y * u_y));
+        u = fast_sqrt((float)((u_x * u_x) + (u_y * u_y)));
         /* compute pressure */
         pressure = local_density * c_sq;
       }
