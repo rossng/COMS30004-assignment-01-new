@@ -154,7 +154,6 @@ int main(int argc, char* argv[])
   tic = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
 
   int tot_cells = 0;
-#pragma omp parallel for reduction(+:tot_cells)
   for (int ii = 0; ii < params.nx * params.ny; ii++) {
     if (!obstacles[ii]) {
       tot_cells++;
