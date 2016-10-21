@@ -92,10 +92,10 @@ int initialise(const char* paramfile, const char* obstaclefile,
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & rebound_and_collision()
 */
-int timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells);
-int rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles);
+void timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
+void accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
+void propagate(const t_param params, t_speed* cells, t_speed* tmp_cells);
+void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles);
 int write_values(const t_param params, t_speed* cells, int* obstacles, double* av_vels);
 
 /* finalise, including freeing up allocated memory */
@@ -192,15 +192,14 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-int timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
+void timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
 {
   accelerate_flow(params, cells, obstacles);
   propagate(params, cells, tmp_cells);
   rebound_and_collision(params, cells, tmp_cells, obstacles);
-  return EXIT_SUCCESS;
 }
 
-int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
+void accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
 {
   /* compute weighting factors */
   double w1 = params.density * params.accel / 9.0;
@@ -229,11 +228,9 @@ int accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
       cells[ii * params.nx + jj].speeds[7] -= w2;
     }
   }
-
-  return EXIT_SUCCESS;
 }
 
-int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
+void propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 {
   /* loop over _all_ cells */
 #pragma omp parallel for
@@ -261,11 +258,9 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
       tmp_cells[ii * params.nx + jj].speeds[8] = cells[y_n * params.nx + x_w].speeds[8];
     }
   }
-
-  return EXIT_SUCCESS;
 }
 
-int rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles)
+void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles)
 {
   const double w0 = 4.0 / 9.0;  /* weighting factor */
   const double w1 = 1.0 / 9.0;  /* weighting factor */
@@ -344,8 +339,6 @@ int rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cel
       }
     }
   }
-
-  return EXIT_SUCCESS;
 }
 
 double av_velocity(const t_param params, t_speed* cells, int* obstacles)
