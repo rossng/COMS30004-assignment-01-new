@@ -270,9 +270,9 @@ void propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 
 void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles)
 {
-  const double w0 = 4.0 / 9.0;  /* weighting factor */
-  const double w1 = 1.0 / 9.0;  /* weighting factor */
-  const double w2 = 1.0 / 36.0; /* weighting factor */
+  static const double w0 = 4.0 / 9.0;  /* weighting factor */
+  static const double w1 = 1.0 / 9.0;  /* weighting factor */
+  static const double w2 = 1.0 / 36.0; /* weighting factor */
 
   /* loop over the cells in the grid
   ** NB the collision step is called after
