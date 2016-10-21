@@ -238,13 +238,14 @@ int propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 #pragma omp parallel for
   for (int ii = 0; ii < params.ny; ii++)
   {
+    int y_n = (ii + 1) % params.ny;
+    int y_s = (ii == 0) ? (ii + params.ny - 1) : (ii - 1);
+
     for (int jj = 0; jj < params.nx; jj++)
     {
       /* determine indices of axis-direction neighbours
       ** respecting periodic boundary conditions (wrap around) */
-      int y_n = (ii + 1) % params.ny;
       int x_e = (jj + 1) % params.nx;
-      int y_s = (ii == 0) ? (ii + params.ny - 1) : (ii - 1);
       int x_w = (jj == 0) ? (jj + params.nx - 1) : (jj - 1);
       /* propagate densities to neighbouring cells, following
       ** appropriate directions of travel and writing into
