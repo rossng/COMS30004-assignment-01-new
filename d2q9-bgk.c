@@ -92,11 +92,11 @@ int initialise(const char* paramfile, const char* obstaclefile,
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & rebound_and_collision()
 */
-void timestep(t_speed* cells, t_speed* tmp_cells, int* obstacles);
-void accelerate_flow(t_speed* cells, int* obstacles);
-void propagate(t_speed* cells, t_speed* tmp_cells);
-void rebound_and_collision(t_speed *cells, t_speed *tmp_cells, int *obstacles);
-int write_values(t_speed* cells, int* obstacles, double* av_vels);
+void timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles);
+void accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
+void propagate(const t_param params, t_speed* cells, t_speed* tmp_cells);
+void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles);
+int write_values(const t_param params, t_speed* cells, int* obstacles, double* av_vels);
 
 /* finalise, including freeing up allocated memory */
 int finalise(const t_param* params, t_speed** cells_ptr, t_speed** tmp_cells_ptr,
@@ -117,7 +117,6 @@ void die(const char* message, const int line, const char* file);
 void usage(const char* exe);
 
 int tot_cells = 0;
-t_param  params;              /* struct to hold parameter values */
 
 /*
 ** main program:
@@ -127,6 +126,7 @@ int main(int argc, char* argv[])
 {
   char*    paramfile = NULL;    /* name of the input parameter file */
   char*    obstaclefile = NULL; /* name of a the input obstacle file */
+  t_param  params;              /* struct to hold parameter values */
   t_speed* cells     = NULL;    /* grid containing fluid densities */
   t_speed* tmp_cells = NULL;    /* scratch space */
   int*     obstacles = NULL;    /* grid indicating which cells are blocked */
@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
 
   for (int tt = 0; tt < params.maxIters; tt++)
   {
-    timestep(cells, tmp_cells, obstacles);
+    timestep(params, cells, tmp_cells, obstacles);
     av_vels[tt] = av_velocity(params, cells, obstacles);
 #ifdef DEBUG
     printf("==timestep: %d==\n", tt);
@@ -186,20 +186,20 @@ int main(int argc, char* argv[])
   printf("Elapsed time:\t\t\t%.6lf (s)\n", toc - tic);
   printf("Elapsed user CPU time:\t\t%.6lf (s)\n", usrtim);
   printf("Elapsed system CPU time:\t%.6lf (s)\n", systim);
-  write_values(cells, obstacles, av_vels);
+  write_values(params, cells, obstacles, av_vels);
   finalise(&params, &cells, &tmp_cells, &obstacles, &av_vels);
 
   return EXIT_SUCCESS;
 }
 
-void timestep(t_speed* cells, t_speed* tmp_cells, int* obstacles)
+void timestep(const t_param params, t_speed* cells, t_speed* tmp_cells, int* obstacles)
 {
-  accelerate_flow(cells, obstacles);
-  propagate(cells, tmp_cells);
-  rebound_and_collision(cells, tmp_cells, obstacles);
+  accelerate_flow(params, cells, obstacles);
+  propagate(params, cells, tmp_cells);
+  rebound_and_collision(params, cells, tmp_cells, obstacles);
 }
 
-void accelerate_flow(t_speed* cells, int* obstacles)
+void accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
 {
   /* compute weighting factors */
   double w1 = params.density * params.accel / 9.0;
@@ -230,7 +230,7 @@ void accelerate_flow(t_speed* cells, int* obstacles)
   }
 }
 
-void propagate(t_speed* cells, t_speed* tmp_cells)
+void propagate(const t_param params, t_speed* cells, t_speed* tmp_cells)
 {
   /* loop over _all_ cells */
 #pragma omp parallel for
@@ -260,7 +260,7 @@ void propagate(t_speed* cells, t_speed* tmp_cells)
   }
 }
 
-void rebound_and_collision(t_speed *cells, t_speed *tmp_cells, int *obstacles)
+void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_cells, int *obstacles)
 {
   const double w0 = 4.0 / 9.0;  /* weighting factor */
   const double w1 = 1.0 / 9.0;  /* weighting factor */
@@ -591,7 +591,7 @@ double total_density(const t_param params, t_speed* cells)
   return total;
 }
 
-int write_values(t_speed* cells, int* obstacles, double* av_vels)
+int write_values(const t_param params, t_speed* cells, int* obstacles, double* av_vels)
 {
   FILE* fp;                     /* file pointer */
   const double c_sq = 1.0 / 3.0; /* sq. of speed of sound */
