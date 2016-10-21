@@ -327,6 +327,7 @@ void rebound_and_collision(const t_param params, t_speed *cells, t_speed *tmp_ce
         d_equ[8] = w2 * local_density * (u_y * (-9.0 * u_x + 3.0 * u_y - 3.0) + u_x * (3.0 * u_x + 3.0) + 1.0);
 
         /* relaxation step */
+#pragma unroll(NSPEEDS)
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           cells[ii * params.nx + jj].speeds[kk] = tmp_cells[ii * params.nx + jj].speeds[kk]
