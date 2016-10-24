@@ -56,6 +56,7 @@
 #include<sys/time.h>
 #include<sys/resource.h>
 #include <xmmintrin.h>
+#include <omp.h>
 
 #define NSPEEDS         9
 #define FINALSTATEFILE  "final_state.dat"
@@ -204,6 +205,7 @@ int main(int argc, char* argv[])
   printf("Elapsed time:\t\t\t%.6lf (s)\n", toc - tic);
   printf("Elapsed user CPU time:\t\t%.6lf (s)\n", usrtim);
   printf("Elapsed system CPU time:\t%.6lf (s)\n", systim);
+  printf("Max number of threads:\t%d\n", omp_get_max_threads());
   write_values(params, cells, obstacles, av_vels);
   finalise(&params, &cells, &tmp_cells, &obstacles, &av_vels);
 
