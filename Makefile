@@ -5,7 +5,7 @@ EXE=d2q9-bgk
 CC=icc
 CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div -xsse4.2 -no-prec-sqrt
 LIBS = -lm
-EXTRAFLAGS= -debug full
+EXTRAFLAGS=
 
 FINAL_STATE_FILE=./final_state.dat
 AV_VELS_FILE=./av_vels.dat
