@@ -257,7 +257,7 @@ void accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
 void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells)
 {
   /* loop over _all_ cells */
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for
   for (int ii = 0; ii < params.ny; ii++)
   {
     for (int jj = 0; jj < params.nx; jj++)
@@ -323,7 +323,7 @@ void rebound_and_collision(const t_param params, t_speed *cells, t_speed_temp *t
   ** NB the collision step is called after
   ** the propagate step and so values of interest
   ** are in the scratch-space grid */
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for
   for (int ii = 0; ii < params.ny; ii++)
   {
     for (int jj = 0; jj < params.nx; jj++)
@@ -375,7 +375,7 @@ double av_velocity(const t_param params, t_speed* cells, int* obstacles)
 
   /* initialise */
   tot_u = 0.0;
-#pragma omp parallel for reduction(+:tot_u) collapse(2)
+#pragma omp parallel for reduction(+:tot_u)
   /* loop over all non-blocked cells */
   for (int ii = 0; ii < params.ny; ii++)
   {
