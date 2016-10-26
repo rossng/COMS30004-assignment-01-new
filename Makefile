@@ -2,10 +2,10 @@
 
 EXE=d2q9-bgk
 
-CC=icc
-CFLAGS= -std=c99 -Wall -Ofast -qopenmp -no-prec-div -xsse4.2 -no-prec-sqrt
+CC=gcc
+CFLAGS= -std=c99 -Wall -Ofast -fopenmp -march=native
 LIBS = -lm
-EXTRAFLAGS= -debug full
+EXTRAFLAGS= -g
 
 FINAL_STATE_FILE=./final_state.dat
 AV_VELS_FILE=./av_vels.dat
