@@ -104,9 +104,9 @@ int initialise(const char* paramfile, const char* obstaclefile,
 ** timestep calls, in order, the functions:
 ** accelerate_flow(), propagate(), rebound() & rebound_and_collision()
 */
-void timestep(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, int* obstacles, double* av_vel);
+void timestep(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, int* obstacles);
 void accelerate_flow(const t_param params, t_speed* cells, int* obstacles);
-void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, double* av_vel);
+void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells);
 void rebound_and_collision(const t_param params, t_speed *cells, t_speed_temp *tmp_cells, int *obstacles);
 int write_values(const t_param params, t_speed* cells, int* obstacles, double* av_vels);
 
@@ -180,18 +180,16 @@ int main(int argc, char* argv[])
     }
   }
 
-  timestep(params, cells, tmp_cells, obstacles, &av_vels[0]);
-  for (int tt = 1; tt < params.maxIters; tt++)
+  for (int tt = 0; tt < params.maxIters; tt++)
   {
-    timestep(params, cells, tmp_cells, obstacles, &av_vels[tt - 1]);
+    timestep(params, cells, tmp_cells, obstacles);
+    av_vels[tt] = av_velocity(params, cells, obstacles);
 #ifdef DEBUG
     printf("==timestep: %d==\n", tt);
     printf("av velocity: %.12E\n", av_vels[tt]);
     printf("tot density: %.12E\n", total_density(params, cells));
 #endif
   }
-
-  av_vels[params.maxIters - 1] = av_velocity(params, cells, obstacles);
 
   gettimeofday(&timstr, NULL);
   toc = timstr.tv_sec + (timstr.tv_usec / 1000000.0);
@@ -214,10 +212,10 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-void timestep(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, int* obstacles, double* av_vel)
+void timestep(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, int* obstacles)
 {
   accelerate_flow(params, cells, obstacles);
-  propagate(params, cells, tmp_cells, av_vel);
+  propagate(params, cells, tmp_cells);
   rebound_and_collision(params, cells, tmp_cells, obstacles);
 }
 
@@ -252,9 +250,8 @@ void accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
   }
 }
 
-void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, double* av_vel)
+void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells)
 {
-  double tot_u = 0.0;          /* accumulated magnitudes of velocity for each cell */
   static const double w0 = 4.0 / 9.0;  /* weighting factor */
   static const double w1 = 1.0 / 9.0;  /* weighting factor */
   static const double w2 = 1.0 / 36.0; /* weighting factor */
@@ -327,14 +324,8 @@ void propagate(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, do
       tmp_cells[ii * params.nx + jj].d_equ[7] = w2 * tmp_cells[ii * params.nx + jj].local_density * (tmp_cells[ii * params.nx + jj].u_x * (3.0 * tmp_cells[ii * params.nx + jj].u_x + 9.0 * tmp_cells[ii * params.nx + jj].u_y - 3.0) + tmp_cells[ii * params.nx + jj].u_y * (3.0 * tmp_cells[ii * params.nx + jj].u_y - 3.0) + 1.0);
       tmp_cells[ii * params.nx + jj].d_equ[8] = w2 * tmp_cells[ii * params.nx + jj].local_density * (tmp_cells[ii * params.nx + jj].u_y * (-9.0 * tmp_cells[ii * params.nx + jj].u_x + 3.0 * tmp_cells[ii * params.nx + jj].u_y - 3.0) + tmp_cells[ii * params.nx + jj].u_x * (3.0 * tmp_cells[ii * params.nx + jj].u_x + 3.0) + 1.0);
 
-
-      /* accumulate the norm of x- and y- velocity components */
-      tot_u += fast_sqrt((float) ((tmp_cells[ii * params.nx + jj].u_x * tmp_cells[ii * params.nx + jj].u_x) + (tmp_cells[ii * params.nx + jj].u_y * tmp_cells[ii * params.nx + jj].u_y)));
-
     }
   }
-
-  *av_vel = tot_u / (double)tot_cells;
 }
 
 void rebound_and_collision(const t_param params, t_speed *cells, t_speed_temp *tmp_cells, int *obstacles)
