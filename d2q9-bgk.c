@@ -136,6 +136,12 @@ inline float fast_sqrt(float fIn) {
 
 int tot_cells = 0;
 
+/* accelerate_flow() constants: */
+/* weighting factors */
+double accelerate_flow_w1, accelerate_flow_w2;
+/* 2nd row of the grid */
+int accelerate_flow_ii;
+
 /*
 ** main program:
 ** initialise, timestep loop, finalise
@@ -179,6 +185,11 @@ int main(int argc, char* argv[])
     }
   }
 
+  /* set up accelerate_flow() constants */
+  accelerate_flow_w1 = params.density * params.accel / 9.0;
+  accelerate_flow_w2 = params.density * params.accel / 36.0;
+  accelerate_flow_ii = params.ny - 2;
+
   for (int tt = 0; tt < params.maxIters; tt++)
   {
     timestep(params, cells, tmp_cells, obstacles);
@@ -220,31 +231,25 @@ void timestep(const t_param params, t_speed* cells, t_speed_temp* tmp_cells, int
 
 void accelerate_flow(const t_param params, t_speed* cells, int* obstacles)
 {
-  /* compute weighting factors */
-  double w1 = params.density * params.accel / 9.0;
-  double w2 = params.density * params.accel / 36.0;
-
-  /* modify the 2nd row of the grid */
-  int ii = params.ny - 2;
 
 #pragma omp parallel for
   for (int jj = 0; jj < params.nx; jj++)
   {
     /* if the cell is not occupied and
     ** we don't send a negative density */
-    if (!obstacles[ii * params.nx + jj]
-        && (cells[ii * params.nx + jj].speeds[3] - w1) > 0.0
-        && (cells[ii * params.nx + jj].speeds[6] - w2) > 0.0
-        && (cells[ii * params.nx + jj].speeds[7] - w2) > 0.0)
+    if (!obstacles[accelerate_flow_ii * params.nx + jj]
+        && (cells[accelerate_flow_ii * params.nx + jj].speeds[3] - accelerate_flow_w1) > 0.0
+        && (cells[accelerate_flow_ii * params.nx + jj].speeds[6] - accelerate_flow_w2) > 0.0
+        && (cells[accelerate_flow_ii * params.nx + jj].speeds[7] - accelerate_flow_w2) > 0.0)
     {
       /* increase 'east-side' densities */
-      cells[ii * params.nx + jj].speeds[1] += w1;
-      cells[ii * params.nx + jj].speeds[5] += w2;
-      cells[ii * params.nx + jj].speeds[8] += w2;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[1] += accelerate_flow_w1;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[5] += accelerate_flow_w2;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[8] += accelerate_flow_w2;
       /* decrease 'west-side' densities */
-      cells[ii * params.nx + jj].speeds[3] -= w1;
-      cells[ii * params.nx + jj].speeds[6] -= w2;
-      cells[ii * params.nx + jj].speeds[7] -= w2;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[3] -= accelerate_flow_w1;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[6] -= accelerate_flow_w2;
+      cells[accelerate_flow_ii * params.nx + jj].speeds[7] -= accelerate_flow_w2;
     }
   }
 }
