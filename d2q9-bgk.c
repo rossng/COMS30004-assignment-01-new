@@ -349,10 +349,6 @@ void rebound_and_collision(const t_param params, t_speed *cells, t_speed_temp *t
         d_equ[8] = w2 * tmp_cells[ii * params.nx + jj].local_density * (tmp_cells[ii * params.nx + jj].u_y * (-9.0f * tmp_cells[ii * params.nx + jj].u_x + 3.0f * tmp_cells[ii * params.nx + jj].u_y - 3.0f) + tmp_cells[ii * params.nx + jj].u_x * (3.0f * tmp_cells[ii * params.nx + jj].u_x + 3.0f) + 1.0f);
 
         /* relaxation step */
-#ifdef __INTEL_COMPILER
-        __assume_aligned(cells, 64);
-        __assume_aligned(tmp_cells, 64);
-#endif
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           cells[ii * params.nx + jj].speeds[kk] = tmp_cells[ii * params.nx + jj].speeds[kk]
