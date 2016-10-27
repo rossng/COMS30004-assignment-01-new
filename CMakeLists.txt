@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(assignment_01)
 
-add_compile_options(-std=c99 -Wall -O3 -g)
+add_compile_options(-std=c99 -Wall -O3)
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
