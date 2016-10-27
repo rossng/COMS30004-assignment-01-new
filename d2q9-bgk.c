@@ -77,13 +77,13 @@ typedef struct
 /* struct to hold the 'speed' values */
 typedef struct
 {
-  float speeds[NSPEEDS];
+  float speeds[NSPEEDS] __attribute__((aligned(64)));
 } t_speed;
 
 /* struct to hold the 'speed' temporary values and calculated derivatives */
 typedef struct
 {
-    float speeds[NSPEEDS];
+    float speeds[NSPEEDS] __attribute__((aligned(64)));
     float local_density;
     float u_x;
     float u_y;
