@@ -35,4 +35,4 @@ numnodes=`wc $PBS_NODEFILE | awk '{ print $1 }'`
 export OMP_NUM_THREADS=$numnodes
 
 #! Run the executable
-$application $options
+env OMP_PROC_BIND=true $application $options
