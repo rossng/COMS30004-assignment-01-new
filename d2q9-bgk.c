@@ -584,16 +584,16 @@ int finalise(const t_param* params, t_speed** cells_ptr, t_speed_temp** tmp_cell
   /*
   ** free up allocated memory
   */
-  free(*cells_ptr);
+  _mm_free(*cells_ptr);
   *cells_ptr = NULL;
 
-  free(*tmp_cells_ptr);
+  _mm_free(*tmp_cells_ptr);
   *tmp_cells_ptr = NULL;
 
-  free(*obstacles_ptr);
+  _mm_free(*obstacles_ptr);
   *obstacles_ptr = NULL;
 
-  free(*av_vels_ptr);
+  _mm_free(*av_vels_ptr);
   *av_vels_ptr = NULL;
 
   return EXIT_SUCCESS;
