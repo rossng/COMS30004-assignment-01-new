@@ -386,7 +386,7 @@ float av_velocity(const t_param params, t_speed* cells, int* obstacles)
       {
         /* local density total */
         float local_density = 0.0f;
-
+#pragma omp simd reduction(+:local_density)
         for (int kk = 0; kk < NSPEEDS; kk++)
         {
           local_density += cells[ii * params.nx + jj].speeds[kk];
