@@ -190,7 +190,9 @@ int main(int argc, char* argv[])
   accelerate_flow_w2 = params.density * params.accel / 36.0f;
   accelerate_flow_ii = params.ny - 2;
 
-  for (int tt = 0; tt < params.maxIters; tt++)
+  const int maxIters = params.maxIters;
+
+  for (int tt = 0; tt < maxIters; tt++)
   {
     timestep(params, cells, tmp_cells, obstacles);
     av_vels[tt] = av_velocity(params, cells, obstacles);
